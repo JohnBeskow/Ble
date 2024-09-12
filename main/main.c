@@ -63,7 +63,7 @@ void app_main(void)
     ble_svc_gap_device_name_set("BleServer");   //set device name
     ble_svc_gap_init();                         //initialize gap service
     ble_svc_gatt_init();                        //initialize gatt service
-    ble_gatts_count_cfg();
+    ble_gatts_count_cfg(gatt_svcs);
 
 
 

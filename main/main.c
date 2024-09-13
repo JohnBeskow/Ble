@@ -64,10 +64,10 @@ static int ble_gap_event(struct ble_gap_event *event , void *arg)
             break;
         //advertise again after disconnect
         case BLE_GAP_EVENT_DISCONNECT:
-            ESP_LOGI("GAP", "BLE GAP EVENT DISCONNECTED %s ", event->disconnect.reason == 0 ? "OK!" : "FAILED!");
+            ESP_LOGI("GAP", "BLE GAP EVENT DISCONNECTED");
             break;
         case BLE_GAP_EVENT_ADV_COMPLETE:
-            ESP_LOGI("GAP", "BLE GAP EVENT ADV COMPLETE %s ", event->adv_complete.reason == 0? "OK!" : "FAILED!");
+            ESP_LOGI("GAP", "BLE GAP EVENT ADV COMPLETE");
             break;
         default:    
             break;
@@ -103,6 +103,11 @@ void ble_app_on_sync(void)
     ble_app_advertise();                        //defines connection
 }
 
+
+void host_task(void *param){
+    nimble_port_run();
+}
+
 void app_main(void)
 {
 
@@ -115,9 +120,9 @@ void app_main(void)
     ble_svc_gap_init();                         //comms
     ble_svc_gatt_init();                        //data organization
     ble_gatts_count_cfg(gatt_svcs);             //count the number of services
-    ble_gatts_add_svcs(gatt_svcs);
-    ble_hs_cfg.sync_cb = ble_app_on_sync;
-
+    ble_gatts_add_svcs(gatt_svcs);              //add services
+    ble_hs_cfg.sync_cb = ble_app_on_sync;       //sync callback
+    nimble_port_freertos_init(host_task);
 
 
 }

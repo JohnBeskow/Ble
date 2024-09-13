@@ -20,6 +20,21 @@ void ble_app_advertise(void);
 static int device_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt,void *arg)
 {   
     printf("Data recieved from client: %.*s\n", ctxt->om->om_len, ctxt->om->om_data);
+
+    char * data = (char *)ctxt->om->om_data;
+
+    if(strcmp(data, "LED ON") == 0)
+    {
+        printf("LED ON\n");
+    }
+    else if(strcmp(data, "LED OFF") == 0)
+    {
+        printf("LED OFF\n");
+    }
+    else
+    {
+        printf("Invalid Command\n");
+    }
     return 0;
 }
 
@@ -65,9 +80,11 @@ static int ble_gap_event(struct ble_gap_event *event , void *arg)
         //advertise again after disconnect
         case BLE_GAP_EVENT_DISCONNECT:
             ESP_LOGI("GAP", "BLE GAP EVENT DISCONNECTED");
+            ble_app_advertise();
             break;
         case BLE_GAP_EVENT_ADV_COMPLETE:
             ESP_LOGI("GAP", "BLE GAP EVENT ADV COMPLETE");
+            ble_app_advertise();
             break;
         default:    
             break;
@@ -122,7 +139,7 @@ void app_main(void)
     ble_gatts_count_cfg(gatt_svcs);             //count the number of services
     ble_gatts_add_svcs(gatt_svcs);              //add services
     ble_hs_cfg.sync_cb = ble_app_on_sync;       //sync callback
-    nimble_port_freertos_init(host_task);
+    nimble_port_freertos_init(host_task);       //initialize nimble
 
 
 }
